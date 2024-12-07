@@ -273,10 +273,10 @@
 
 <br>
 
-<table width="100%">
+<table width="70%">
   <tr>
     <td align="center">
-      <img src="https://github.com/user-attachments/assets/bf55f88f-f12a-4f83-80d2-221dc1bbd35d" width="70%">
+      <img src="https://github.com/user-attachments/assets/bf55f88f-f12a-4f83-80d2-221dc1bbd35d" width="50%">
     </td>
   </tr>
 </table>
@@ -308,9 +308,7 @@
 1. 소수 클래스 데이터 크기만큼 다수 클래스에서 데이터를 추출 ⇒ **➁**
 2. 나머지 다수 클래스 데이터를 이등분 한 후 ➂ 데이터에 랜덤으로 소수 클래스에 해당되는 레이블을 부여
 3. 학습된 모델로 ➁, ➃ 를 테스트
-4. 이 때 임계값을 0.48 < threshold < 0.52 (사용자가 정해도 됨) 으로 지정하여 구간 안으로 테스트 결과가 나올 경우
-
-       ➁ 데이터는 ➁ +  ➂ + ➃ 데이터 전체를 대표할 수 있다고 판단
+4. 이 때 임계값을 0.48 < threshold < 0.52 (사용자가 정해도 됨) 으로 지정하여 구간 안으로 테스트 결과가 나올 경우, ➁ 데이터는 ➁ +  ➂ + ➃ 데이터 전체를 대표할 수 있다고 판단
 
 <br>
 
