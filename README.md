@@ -147,6 +147,7 @@
             - 월별기록에 관한 변수(ex.0의 값을 가질 경우 이번 달의 기록, -2라면 2달 전의 기록의 의미)
 
 <br>
+
 | ID | … | MONTHS_BALANCE | begin | 승인비율 | STATUS |
 | --- | --- | --- | --- | --- | --- |
 | 1 | … |  0 | -2 | 1 | 승인 |
@@ -157,6 +158,7 @@
 | 2 | … | -2 | -4 | 0.2 | 승인 |
 | 2 | … | -3 | -4 | 0.2 | 승인거부 |
 | 2 | … | -4 | -4 | 0.2 | 승인 |
+
 <br>
 
 ### *Hierarchial Regression Analysis*
@@ -165,12 +167,203 @@
 <table width="100%">
   <tr>
     <td align="center">
-      <img src="https://github.com/user-attachments/assets/2473a7b5-89fc-4d37-bf63-005eb661c2b8" width="70%">
+      <img src="https://github.com/user-attachments/assets/ce63a0f0-8916-43f3-a7dd-0f43596d81e7" width="70%">
     </td>
   </tr>
 </table>
 
 <br>
+
+- MONTHS_BALANCE와 ID별 계좌가 몇 개월 동안 열렸는지에 대한 변수의 상관관계가 0.6으로 높음
+- 계수 추정의 오류나 다중공선성의 문제가 생길 수 있음에도 불구하고 두 변수를 사용하면 좋을지의 대한 근거를 검증해보기 위해 활용
+- MONTHS_BALANCE : 독립변수
+- begin(ID별 계좌가 몇 개월 동안 열렸는지에 대한 변수) : 매개변수
+- 나머지 변수 : 통제변수
+- Scaling 진행한 후 분석
+
+**`1단계. 매개변수와 종속변수가 유의미한 관계인지 확인`**
+
+- MONTHS_BALANCE 를 제외한 후 begin을 독립변수, 나머지를 통제변수로 두고 다중 로지스틱  회귀분석 진행
+- 분산 팽창 계수가 전부 10 이하로 다중공선성 문제는 없음을 확인
+
+<br>
+
+<table width="100%">
+  <tr>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/07dc68ae-4ff9-4e55-ade8-a3b255c1d539" width="90%">
+    </td>
+  </tr>
+</table>
+
+<br>
+
+- 독립변수와 종속변수가 유의미한 관계임을 확인
+
+**`2단계. 독립변수와 종속변수가 유의미한 관계인지 확인`**
+
+- begin 를 제외한 후 MONTHS_BALANCE 을 독립변수, 나머지를 통제변수로 두고 다중 로지스틱  회귀분석 진행
+- 분산 팽창 계수가 전부 10 이하로 다중공선성 문제는 없음을 확인
+
+<br>
+
+<table width="100%">
+  <tr>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/9778eab9-fec7-4838-a8cb-2f61d4a27785" width="90%">
+    </td>
+  </tr>
+</table>
+
+<br>
+
+- 매개변수와 종속변수가 유의미한 관계임을 확인
+
+**`3단계. 독립변수와 매개변수가 유의미한 관계인지 확인`**
+
+- MONTHS_BALANCE 을 종속변수, begin을 독립변수, 나머지를 통제변수로 두고 다중 회귀 분석 진행
+- 분산 팽창 계수가 전부 10 이하로 다중공선성 문제는 없음을 확인
+- 독립변수와 매개변수의 관계가 유의함을 확인
+
+**`4단계. 모든 변수 투입하여  다중 로지스틱 분석`**
+
+- 독립변수와 매개변수가 동시에 회귀식에 투입되었을 때 매개변수가 종속변수에 여전히 유의한 영향을 미치는 한편, 독립변수와 종속변수의 관계는 매개변수가 투입되지 않았을 경우보다도 더 약화되거나(부분매개) 혹은 유의하지 않게 나타나야 한다(완전매개)
+- 분산 팽창 계수가 전부 10 이하로 다중공선성 문제는 없음을 확인
+
+<br>
+
+<table width="100%">
+  <tr>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/aafc24ca-8ee3-4824-8cc6-e79a4a34f01e" width="90%">
+    </td>
+  </tr>
+</table>
+
+<br>
+
+- 독립변수인 MOTHS_BALANCE의 odd ratio가 매개변수가 투입되지 않았을 때 -0.67 에서 투입되었을 때 -0.54 로 약화되었으며 종속변수와 유의한 관계를 가지므로 부분매개라고 할 수 있다.
+
+***`부분매개를 하기 때문에 두 변수 모두 사용하는 것이 좋다.`***
+<br>
+
+### *Modeling*
+<br>
+
+- **`K-fold Cross Validation`**
+    - 모델 신뢰성 검증 및 기본적인 성능 검토
+    - LR, RF, SVM, XGB, KNN 모델 사용
+    - fold는 5로 진행
+    - 아래는 XGB 결과
+    
+    ```
+    각 분할의 Accuracy 기록 : [0.9874244712990936, 0.9861027190332327, 0.9854601759885192, 0.9860644284149703, 0.9868197439480343]
+    Accuracy 평균: 0.9863743077367699
+    Accuracy 표준편차: 0.0006792171077153273
+    
+    각 분할의 recall 기록 : [0.6935483870967742, 0.7106598984771574, 0.6666666666666666, 0.7074468085106383, 0.7065217391304348]
+    recall 평균 : 0.6969686999763344
+    recall 표준편차: 0.01623830037177331
+    ```
+    
+
+- Accuracy의 경우 모든 모델에서 비슷한 결과를 도출할 수 있었으며 편차도 크지 않아 신뢰성 확보
+- recall의 경우 SVM, XGB, KNN, Logistic Regression, RF 순으로 높음. 특히 SVM과 XGB가 매우 높은 결과를 가져옴. 편차가  크지 않아서 신뢰성 확보된 것으로 판단
+- Sampling 및 하이퍼 파라미터 조정을 하지 않았음에도 좋은 결과가 도출됨
+
+<br>
+
+<table width="100%">
+  <tr>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/bf55f88f-f12a-4f83-80d2-221dc1bbd35d" width="70%">
+    </td>
+  </tr>
+</table>
+
+<br>
+
+- **`Sampling`**
+    - 예측변수가 불균형하므로 Sampling을 요함
+    - 앞선 교차 검증에서 Sampling을 하지 않고도 좋은 결과가 나왔으나 recall이 모델마다 꽤 큰 차이를 보여서 더 안정화 시키고 성능을 높여보고자 Sampling을 진행한 후 튜닝하자고 판단
+    - 또한 튜닝 시 너무 시간이 오래 걸림
+    - `논문 참고하여 진행`
+        - **Handling Method of Imbalance Data for Machine Learning : Focused on Sampling**
+
+<br>
+
+<table width="100%">
+  <tr>
+    <td align="left" width="50%">
+      <img src="https://github.com/user-attachments/assets/d5d7c698-4ac3-4219-8971-9b22bd8beb37" width="95%">
+    </td>
+    <td align="right" width="50%">
+      <img src="https://github.com/user-attachments/assets/deca735f-203d-4ba2-9743-02ecb8200ba0" width="95%">
+    </td>
+  </tr>
+</table>
+
+<br>
+
+1. 소수 클래스 데이터 크기만큼 다수 클래스에서 데이터를 추출 ⇒ **➁**
+2. 나머지 다수 클래스 데이터를 이등분 한 후 ➂ 데이터에 랜덤으로 소수 클래스에 해당되는 레이블을 부여
+3. 학습된 모델로 ➁, ➃ 를 테스트
+4. 이 때 임계값을 0.48 < threshold < 0.52 (사용자가 정해도 됨) 으로 지정하여 구간 안으로 테스트 결과가 나올 경우
+
+       ➁ 데이터는 ➁ +  ➂ + ➃ 데이터 전체를 대표할 수 있다고 판단
+
+<br>
+
+- 오른쪽 그림은 **일반적인 언더 샘플링과 논문에서 제안하는 기법 차이**
+    - 이에 ➀ + ➁ 데이터만을 사용하여 튜닝을 진행하면 시간을 대폭 줄일 수 있음
+    - 기존의 기법들보다 성능도 우수함을 검증
+    - 실제 진행 시 테스트 결과가 임계값 안에 포함되지 않을 시 모집단을 대표할 수 없기에 반복하여 뽑아야 했음
+
+<br>
+
+- **`Hyper Parameter Tunning`**
+    - grid_search 로 튜닝 진행
+    - recall 을 기준으로 탐색
+    - LR, RF, SVM, XGB, KNN 모델 및 Soft Ensemble 활용
+    - 최적 모델은 RF로 선정. 결과는 아래와 같음
+
+<br>
+
+```r
+최적 하이퍼 파라미터:{'max_depth': 5, 'max_features': 'auto', 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 200}, 최적 평균 recall:0.990
+```
+
+```r
+               precision    recall  f1-score   support
+
+           0       1.00      0.87      0.93     55691
+           1       0.13      0.99      0.22      1051
+
+    accuracy                           0.87     56742
+   macro avg       0.56      0.93      0.58     56742
+weighted avg       0.98      0.87      0.92     56742
+
+ROC AUC Score: 0.9314528372976066
+```
+
+## 시사점 및 보완할 점
+
+- **Feature Selection**
+    - 꼼꼼한 EDA를 통해 예측에 영향이 적을 것으로 예상되는 변수 제거
+        - 교호 작용 확인 및 변수 중요도를 추가로 분석했더라면 더욱 정교한 결과를 도출할 수 있었을 것
+    - 공통 ID 추출, 중복 행 삭제, 변수 변환 등을 통해 데이터의 정합성과 품질을 점검
+    - `위계적 회귀분석`을 통해 상관관계가 높은 변수들의 사용 여부를 신중히 결정
+- **Sampling**
+    - 데이터 불균형을 처리하기 위해 논문을 참고하여 `새로운 Sampling 방법` 적용
+    - SMOTE 등 다른 방법론과의 성능 비교를 추가로 진행했다면 더 신뢰성 있는 결과를 확인할 수 있었을 것
+- **세부 분석**
+    - 승인과 승인 거부를 분리할 때, 연체 상태가 1~29일인 경우 연체 가능성이 높은 고객을 보다 세밀하게 분석할 필요가 있었음.
+        - 군집화를 활용하여 연체 가능성이 높은 고객을 추출하는 등 추가적인 접근이 이루어졌다면 결과의 정밀도가 향상되었을 것
+
+
+
+
+
 
 
 
