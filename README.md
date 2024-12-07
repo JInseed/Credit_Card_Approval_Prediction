@@ -343,8 +343,10 @@ weighted avg       0.98      0.87      0.92     56742
 
 ROC AUC Score: 0.9314528372976066
 ```
+<br>
 
 ## 시사점 및 보완할 점
+<br>
 
 - **Feature Selection**
     - 꼼꼼한 EDA를 통해 예측에 영향이 적을 것으로 예상되는 변수 제거
